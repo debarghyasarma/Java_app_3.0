@@ -1,113 +1,151 @@
 @Library('my-shared-library') _
 
-pipeline{
-
+pipeline {
     agent any
-    //agent { label 'Demo' }
-
-    parameters{
-
-        choice(name: 'action', choices: 'create\ndelete', description: 'Choose create/Destroy')
-        string(name: 'ImageName', description: "name of the docker build", defaultValue: 'javapp')
-        string(name: 'ImageTag', description: "tag of the docker build", defaultValue: 'v1')
-        string(name: 'DockerHubUser', description: "name of the Application", defaultValue: 'praveensingam1994')
+    parameters {
+        choice(name: 'action', choices: 'create\nrollback', description: 'Create/rollback of the deployment')
+        string(name: 'ImageName', description: "Name of the docker build", defaultValue: "kubernetes-configmap-reload")
+        string(name: 'ImageTag', description: "Name of the docker build", defaultValue: "v1")
+        string(name: 'AppName', description: "Name of the Application", defaultValue: "kubernetes-configmap-reload")
+        string(name: 'docker_repo', description: "Name of docker repository", defaultValue: "debarghya499")
     }
 
-    stages{
-         
-        stage('Git Checkout'){
-                    when { expression {  params.action == 'create' } }
-            steps{
-            gitCheckout(
-                branch: "main",
-                url: "https://github.com/praveen1994dec/Java_app_3.0.git"
-            )
-            }
-        }
-         stage('Unit Test maven'){
-         
-         when { expression {  params.action == 'create' } }
+    tools {
+        maven 'maven'
+    }
 
-            steps{
-               script{
-                   
-                   mvnTest()
-               }
+    stages {
+        stage('Git checkout') {
+            when {
+                expression { params.action == "create" }
+            }
+            steps {
+                gitCheckout(
+                    branch: "main",
+                    url: https://github.com/debarghyasarma/Java_app_3.0.git"
+                )
             }
         }
-         stage('Integration Test maven'){
-         when { expression {  params.action == 'create' } }
-            steps{
-               script{
-                   
-                   mvnIntegrationTest()
-               }
+
+        stage('Unit test Maven') {
+            when {
+                expression { params.action == "create" }
+            }
+            steps {
+                script {
+                    mvnTest()
+                }
             }
         }
-        stage('Static code analysis: Sonarqube'){
-         when { expression {  params.action == 'create' } }
-            steps{
-               script{
-                   
-                   def SonarQubecredentialsId = 'sonarqube-api'
-                   statiCodeAnalysis(SonarQubecredentialsId)
-               }
+
+        stage('Integration test Maven') {
+            when {
+                expression { params.action == "create" }
             }
-       }
-       stage('Quality Gate Status Check : Sonarqube'){
-         when { expression {  params.action == 'create' } }
-            steps{
-               script{
-                   
-                   def SonarQubecredentialsId = 'sonarqube-api'
-                   QualityGateStatus(SonarQubecredentialsId)
-               }
-            }
-       }
-        stage('Maven Build : maven'){
-         when { expression {  params.action == 'create' } }
-            steps{
-               script{
-                   
-                   mvnBuild()
-               }
+            steps {
+                script {
+                    mvnIntegrationTest()
+                }
             }
         }
-        stage('Docker Image Build'){
-         when { expression {  params.action == 'create' } }
-            steps{
-               script{
-                   
-                   dockerBuild("${params.ImageName}","${params.ImageTag}","${params.DockerHubUser}")
-               }
+
+        stage('Static code analysis') {
+            when {
+                expression { params.action == "create" }
+            }
+            steps {
+                script {
+                    def SonarQubecredentialsId = 'sonarqube-api'
+                    statiCodeAnalysis(SonarQubecredentialsId)
+                }
             }
         }
-         stage('Docker Image Scan: trivy '){
-         when { expression {  params.action == 'create' } }
-            steps{
-               script{
-                   
-                   dockerImageScan("${params.ImageName}","${params.ImageTag}","${params.DockerHubUser}")
-               }
+
+        stage('Quality Gate Status Check : Sonarqube') {
+            when {
+                expression { params.action == "create" }
+            }
+            steps {
+                script {
+                    def SonarQubecredentialsId = "sonar-api"
+                    QualityGateStatus(SonarQubecredentialsId)
+                }
             }
         }
-        stage('Docker Image Push : DockerHub '){
-         when { expression {  params.action == 'create' } }
-            steps{
-               script{
-                   
-                   dockerImagePush("${params.ImageName}","${params.ImageTag}","${params.DockerHubUser}")
-               }
+
+        stage('Build Maven') {
+            when {
+                expression { params.action == "create" }
             }
-        }   
-        stage('Docker Image Cleanup : DockerHub '){
-         when { expression {  params.action == 'create' } }
-            steps{
-               script{
-                   
-                   dockerImageCleanup("${params.ImageName}","${params.ImageTag}","${params.DockerHubUser}")
-               }
+            steps {
+                script {
+                    mvnBuild()
+                }
             }
-        }      
+        }
+
+        stage('Docker Image build') {
+            when {
+                expression { params.action == "create" }
+            }
+            steps {
+                script {
+                    dockerBuild("${params.ImageName}", "${params.ImageTag}", "${params.docker_repo}")
+                }
+            }
+        }
+
+        stage('Image Scan Trivy') {
+            when {
+                expression { params.action == "create" }
+            }
+            steps {
+                script {
+                    dockerImageScan("${params.ImageName}", "${params.ImageTag}", "${params.docker_repo}")
+                }
+            }
+        }
+
+        stage('Docker image push') {
+            when {
+                expression { params.action == "create" }
+            }
+            steps {
+                script {
+                    dockerImagePush("${params.ImageName}", "${params.ImageTag}", "${params.docker_repo}")
+                }
+            }
+        }
+
+        stage('Create deployment') {
+            when {
+                expression { params.action == "create" }
+            }
+            steps {
+                sh 'echo ${WORKSPACE}'
+                sh 'kubectl create -f ${WORKSPACE}/kubernetes-configmap-reload/kubernetes-configmap.yml'
+            }
+        }
+
+        stage('Pods Deployment') {
+            when {
+                expression { params.action == "create" }
+            }
+            steps {
+                sh 'sleep 300'
+            }
+        }
+
+        stage('Rollback deployment') {
+            when {
+                expression { params.action == "rollback" }
+            }
+            steps {
+                sh """
+                    kubectl delete deploy ${params.AppName}
+                    kubectl delete svc ${params.AppName}
+                """
+            }
+        }
     }
 }
