@@ -10,9 +10,9 @@ pipeline {
         string(name: 'docker_repo', description: "Name of docker repository", defaultValue: "debarghya499")
     }
 
-    tools {
-        maven 'maven'
-    }
+    // tools {
+    //     maven 'maven'
+    // }
 
     stages {
         stage('Git checkout') {
