@@ -123,7 +123,7 @@ pipeline {
             }
             steps {
                 sh 'echo ${WORKSPACE}'
-                sh 'kubectl create -f ${WORKSPACE}/kubernetes-configmap-reload/kubernetes-configmap.yml'
+                sh 'kubectl create -f ${WORKSPACE}/deployment.yaml'
             }
         }
 
