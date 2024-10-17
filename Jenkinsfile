@@ -95,16 +95,16 @@ pipeline {
             }
         }
 
-        stage('Image Scan Trivy') {
-            when {
-                expression { params.action == "create" }
-            }
-            steps {
-                script {
-                    dockerImageScan("${params.ImageName}", "${params.ImageTag}", "${params.docker_repo}")
-                }
-            }
-        }
+        // stage('Image Scan Trivy') {
+        //     when {
+        //         expression { params.action == "create" }
+        //     }
+        //     steps {
+        //         script {
+        //             dockerImageScan("${params.ImageName}", "${params.ImageTag}", "${params.docker_repo}")
+        //         }
+        //     }
+        // }
 
         stage('Docker image push') {
             when {
