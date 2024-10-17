@@ -124,7 +124,7 @@ pipeline {
             }
             steps {
                 sh 'echo ${WORKSPACE}'
-                sh 'minikube kubectl create -f ${WORKSPACE}/deployment.yaml'
+                sh 'minikube kubectl -- apply -f ${WORKSPACE}/deployment.yaml'
             }
         }
 
