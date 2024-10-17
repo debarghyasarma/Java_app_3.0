@@ -123,16 +123,9 @@ pipeline {
                 expression { params.action == "create" }
             }
             steps {
-                withCredentials([string(credentialsId: 'jenkins-sa-token-secret', variable: 'K8S_TOKEN')]) {
-                    script {
-                        // Set up kubectl with the token
-                        sh '''
-                            kubectl config set-credentials jenkins --token=$K8S_TOKEN
-                            kubectl config set-context minikube-context --user=jenkins --cluster=minikube
-                            kubectl config use-context minikube-context
-                            kubectl apply -f ${WORKSPACE}/deployment.yaml
-                        '''
-                    }
+                script {
+                    // Set up kubectl with the token
+                    sh 'kubectl apply -f ${WORKSPACE}/deployment.yaml'
                 }
             }
         }
