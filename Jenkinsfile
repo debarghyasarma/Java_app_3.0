@@ -130,6 +130,7 @@ pipeline {
                             kubectl config set-credentials jenkins --token=$K8S_TOKEN
                             kubectl config set-context minikube-context --user=jenkins --cluster=minikube
                             kubectl config use-context minikube-context
+                            minikube start
                             minikube kubectl -- apply -f ${WORKSPACE}/deployment.yaml --validate=false
                         '''
                     }
