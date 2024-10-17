@@ -10,9 +10,10 @@ pipeline {
         string(name: 'docker_repo', description: "Name of docker repository", defaultValue: "debarghya499")
     }
 
-    // tools {
-    //     maven 'maven'
-    // }
+    environment {
+        KUBEVERSION = '1.21.1'  // Update with the correct version for your Minikube
+        KUBECONFIG = '/var/lib/jenkins/.kube/config'  // Path to the kubeconfig
+    }
 
     stages {
         stage('Git checkout') {
@@ -123,7 +124,7 @@ pipeline {
             }
             steps {
                 sh 'echo ${WORKSPACE}'
-                sh 'kubectl create -f ${WORKSPACE}/deployment.yaml'
+                sh 'minikube kubectl create -f ${WORKSPACE}/deployment.yaml'
             }
         }
 
