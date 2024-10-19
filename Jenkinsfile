@@ -10,10 +10,9 @@ pipeline {
         string(name: 'docker_repo', description: "Name of docker repository", defaultValue: "debarghya499")
     }
 
-    // environment {
-    //     KUBEVERSION = '1.21.1'  // Update with the correct version for your Minikube
-    //     KUBECONFIG = '/var/lib/jenkins/.kube/config'  // Path to the kubeconfig
-    // }
+    environment {
+        KUBECONFIG_CREDENTIALS_ID = 'minikube-kubeconfig' // The ID of the kubeconfig credentials added to Jenkins
+    }
 
     stages {
         stage('Git checkout') {
@@ -122,17 +121,13 @@ pipeline {
             when {
                 expression { params.action == "create" }
             }
-            steps {
-                withCredentials([string(credentialsId: 'jenkins-sa-token-secret', variable: 'K8S_TOKEN')]) {
-                    script {
-                        // Set up kubectl with the token
-                        sh '''
-                            kubectl config set-credentials jenkins --token=$K8S_TOKEN
-                            kubectl config set-context minikube-context --user=jenkins --cluster=minikube
-                            kubectl config use-context minikube-context
-                            minikube start
-                            minikube kubectl -- apply -f ${WORKSPACE}/deployment.yaml --validate=false
-                        '''
+             steps {
+                script {
+                    withCredentials([file(credentialsId: env.KUBECONFIG_CREDENTIALS_ID, variable: 'KUBECONFIG')]) {
+                        // Ensure kubectl is available and connected to Minikube
+                        
+                        // Deploy the application to Minikube
+                        sh 'kubectl apply -f ${WORKSPACE}/deployment.yaml' // Point this to your Kubernetes YAML file
                     }
                 }
             }
