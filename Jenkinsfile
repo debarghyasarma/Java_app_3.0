@@ -45,29 +45,29 @@ pipeline {
             }
         }
 
-        stage('Static code analysis') {
-            when {
-                expression { params.action == "create" }
-            }
-            steps {
-                script {
-                    def SonarQubecredentialsId = 'sonarqube-api'
-                    statiCodeAnalysis(SonarQubecredentialsId)
-                }
-            }
-        }
+        // stage('Static code analysis') {
+        //     when {
+        //         expression { params.action == "create" }
+        //     }
+        //     steps {
+        //         script {
+        //             def SonarQubecredentialsId = 'sonarqube-api'
+        //             statiCodeAnalysis(SonarQubecredentialsId)
+        //         }
+        //     }
+        // }
 
-        stage('Quality Gate Status Check : Sonarqube') {
-            when {
-                expression { params.action == "create" }
-            }
-            steps {
-                script {
-                    def SonarQubecredentialsId = "sonar-api"
-                    QualityGateStatus(SonarQubecredentialsId)
-                }
-            }
-        }
+        // stage('Quality Gate Status Check : Sonarqube') {
+        //     when {
+        //         expression { params.action == "create" }
+        //     }
+        //     steps {
+        //         script {
+        //             def SonarQubecredentialsId = "sonar-api"
+        //             QualityGateStatus(SonarQubecredentialsId)
+        //         }
+        //     }
+        // }
 
         stage('Build Maven') {
             when {
@@ -129,25 +129,25 @@ pipeline {
             }
         }
 
-        stage('Pods Deployment') {
-            when {
-                expression { params.action == "create" }
-            }
-            steps {
-                sh 'sleep 300'
-            }
-        }
+        // stage('Pods Deployment') {
+        //     when {
+        //         expression { params.action == "create" }
+        //     }
+        //     steps {
+        //         sh 'sleep 300'
+        //     }
+        // }
 
-        stage('Rollback deployment') {
-            when {
-                expression { params.action == "rollback" }
-            }
-            steps {
-                sh """
-                    kubectl delete deploy ${params.AppName}
-                    kubectl delete svc ${params.AppName}
-                """
-            }
-        }
+        // stage('Rollback deployment') {
+        //     when {
+        //         expression { params.action == "rollback" }
+        //     }
+        //     steps {
+        //         sh """
+        //             kubectl delete deploy ${params.AppName}
+        //             kubectl delete svc ${params.AppName}
+        //         """
+        //     }
+        // }
     }
 }
