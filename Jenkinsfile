@@ -119,7 +119,7 @@ pipeline {
             }
              steps {
                 script {
-                    withCredentials([file(credentialsId: ksecrets)]) {
+                    withCredentials([file(credentialsId: 'ksecrets')]) {
                         // Ensure kubectl is available and connected to Minikube
                         
                         // Deploy the application to Minikube
