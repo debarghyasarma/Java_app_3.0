@@ -119,12 +119,12 @@ pipeline {
             }
              steps {
                 script {
-                    withCredentials([file(credentialsId: 'ksecrets')]) {
+                    // withCredentials([file(credentialsId: 'ksecrets')]) {
                         // Ensure kubectl is available and connected to Minikube
                         
                         // Deploy the application to Minikube
                         sh 'kubectl apply -f ${WORKSPACE}/deployment.yaml --validate=false' // Point this to your Kubernetes YAML file
-                    }
+                    //}
                 }
             }
         }
