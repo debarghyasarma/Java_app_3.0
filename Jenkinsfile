@@ -12,7 +12,7 @@ pipeline {
 
     environment {
        KUBECONFIG_CREDENTIALS_ID = 'minikube-kubeconfig' // The ID of the kubeconfig credentials added to Jenkins
-       KUBEVIRT_KUBEVIRT_KUBECONFIG = '/home/jenkins/.minikube/config'
+       // KUBEVIRT_KUBEVIRT_KUBECONFIG = '/home/jenkins/.minikube/config'
     }
 
     stages {
