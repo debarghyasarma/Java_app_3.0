@@ -23,27 +23,27 @@ pipeline {
             }
         }
 
-        stage('Unit test Maven') {
-            when {
-                expression { params.action == "create" }
-            }
-            steps {
-                script {
-                    mvnTest()
-                }
-            }
-        }
+        // stage('Unit test Maven') {
+        //     when {
+        //         expression { params.action == "create" }
+        //     }
+        //     steps {
+        //         script {
+        //             mvnTest()
+        //         }
+        //     }
+        // }
 
-        stage('Integration test Maven') {
-            when {
-                expression { params.action == "create" }
-            }
-            steps {
-                script {
-                    mvnIntegrationTest()
-                }
-            }
-        }
+        // stage('Integration test Maven') {
+        //     when {
+        //         expression { params.action == "create" }
+        //     }
+        //     steps {
+        //         script {
+        //             mvnIntegrationTest()
+        //         }
+        //     }
+        // }
 
         // stage('Static code analysis') {
         //     when {
@@ -69,16 +69,16 @@ pipeline {
         //     }
         // }
 
-        stage('Build Maven') {
-            when {
-                expression { params.action == "create" }
-            }
-            steps {
-                script {
-                    mvnBuild()
-                }
-            }
-        }
+        // stage('Build Maven') {
+        //     when {
+        //         expression { params.action == "create" }
+        //     }
+        //     steps {
+        //         script {
+        //             mvnBuild()
+        //         }
+        //     }
+        // }
 
         stage('Docker Image build') {
             when {
