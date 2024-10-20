@@ -139,8 +139,8 @@ pipeline {
             }
             steps {
                 sh """
-                    kubectl delete deploy ${params.AppName}
-                    kubectl delete svc ${params.AppName}
+                    sudo kubectl delete deploy ${params.AppName}
+                    sudo kubectl delete svc ${params.AppName}
                 """
             }
         }
