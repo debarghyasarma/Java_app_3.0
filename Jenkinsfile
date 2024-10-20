@@ -129,25 +129,25 @@ pipeline {
             }
         }
 
-        // stage('Pods Deployment') {
-        //     when {
-        //         expression { params.action == "create" }
-        //     }
-        //     steps {
-        //         sh 'sleep 300'
-        //     }
-        // }
+        stage('Pods Deployment') {
+            when {
+                expression { params.action == "create" }
+            }
+            steps {
+                sh 'sleep 300'
+            }
+        }
 
-        // stage('Rollback deployment') {
-        //     when {
-        //         expression { params.action == "rollback" }
-        //     }
-        //     steps {
-        //         sh """
-        //             kubectl delete deploy ${params.AppName}
-        //             kubectl delete svc ${params.AppName}
-        //         """
-        //     }
-        // }
+        stage('Rollback deployment') {
+            when {
+                expression { params.action == "rollback" }
+            }
+            steps {
+                sh """
+                    kubectl delete deploy ${params.AppName}
+                    kubectl delete svc ${params.AppName}
+                """
+            }
+        }
     }
 }
